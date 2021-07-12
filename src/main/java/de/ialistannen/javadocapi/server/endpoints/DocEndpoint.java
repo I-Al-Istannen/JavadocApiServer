@@ -43,7 +43,10 @@ public class DocEndpoint {
   @GET
   @Path("/search")
   @Produces(MediaType.TEXT_HTML)
-  public View query(@QueryParam("query") @NotNull @NotEmpty String query) {
+  public View query(@QueryParam("query") String query) {
+    if (query == null || query.isBlank()) {
+      return new ResultView(List.of());
+    }
     List<Result> results = finder.query(loader, query)
         .stream()
         .flatMap(it -> loader.findByQualifiedName(it.getQualifiedName())

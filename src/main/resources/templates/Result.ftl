@@ -37,28 +37,56 @@
       flex-basis: 100%;
       flex-shrink: 0;
     }
+
+    h1 {
+      text-align: center;
+    }
+
+    .container.centering {
+      align-items: center;
+      justify-content: center;
+    }
+
+    input[type="text"] {
+      font-size: 24px;
+      font-family: monospace;
+      width: 40ch;
+    }
   </style>
   <link href="https://unpkg.com/prismjs@1/themes/prism.css" rel="stylesheet"/>
   <script src="https://unpkg.com/prismjs@1/components/prism-core.min.js"></script>
   <script src="https://unpkg.com/prismjs@1/plugins/autoloader/prism-autoloader.min.js"></script>
 </head>
 <body>
-<h1>Query results</h1>
-<div class="container">
-    <#list results as result>
-      <div class="container">
-        <h3 class="row">
-          <code class="language-java">${result.declaration}</code>
-            ${result.exact?string("exact match", "fuzzy match")}
-        </h3>
-        <div class="split row">
-          <code class="language-html">${result.html}</code>
-          <code class="language-markdown">${result.markdown}</code>
-        </div>
-        <footer>Loaded from API: '${result.source}'</footer>
-      </div>
-    </#list>
+
+<div class="container centering">
+  <h1 class="row">Perform Query</h1>
+  <form method="GET" action="/search">
+    <label>
+      <input type="text" name="query" placeholder="Enter text...">
+    </label>
+    <button type="submit">Search</button>
+  </form>
 </div>
+
+<#if (results?size > 0)>
+  <h1>Query results</h1>
+  <div class="container">
+      <#list results as result>
+        <div class="container">
+          <h3 class="row">
+            <code class="language-java">${result.declaration}</code>
+              ${result.exact?string("exact match", "fuzzy match")}
+          </h3>
+          <div class="split row">
+            <code class="language-html">${result.html}</code>
+            <code class="language-markdown">${result.markdown}</code>
+          </div>
+          <footer>Loaded from API: '${result.source}'</footer>
+        </div>
+      </#list>
+  </div>
+</#if>
 </body>
 </html>
 
