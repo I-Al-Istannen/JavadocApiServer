@@ -76,13 +76,21 @@
         <div class="container">
           <h3 class="row">
             <code class="language-java">${result.declaration}</code>
+              <#if (result.name.asString()?contains("#"))>
+                in
+                <a href="/search?query=${result.name.lexicalParent.get().asString()}">
+                  <code class="language-java">${result.name.lexicalParent.get().asString()}</code>
+                </a>
+              </#if>
               ${result.exact?string("exact match", "fuzzy match")}
           </h3>
           <div class="split row">
             <code class="language-html">${result.html}</code>
             <code class="language-markdown">${result.markdown}</code>
           </div>
-          <footer>Loaded from API: '${result.source}'</footer>
+          <footer>
+            Loaded from API: '${result.source}', qualified to ${result.name.asString()}
+          </footer>
         </div>
       </#list>
   </div>
