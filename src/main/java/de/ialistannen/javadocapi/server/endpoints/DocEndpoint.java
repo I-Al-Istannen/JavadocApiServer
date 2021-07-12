@@ -8,12 +8,11 @@ import de.ialistannen.javadocapi.querying.FuzzyElementQuery;
 import de.ialistannen.javadocapi.rendering.HtmlCommentRender;
 import de.ialistannen.javadocapi.rendering.MarkdownCommentRenderer;
 import de.ialistannen.javadocapi.server.views.ResultView;
+import de.ialistannen.javadocapi.storage.ConfiguredGson;
 import de.ialistannen.javadocapi.storage.ElementLoader;
 import io.dropwizard.views.View;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -47,7 +46,23 @@ public class DocEndpoint {
     if (query == null || query.isBlank()) {
       return new ResultView(List.of());
     }
-    List<Result> results = finder.query(loader, query)
+
+    return new ResultView(getResultsForQuery(query));
+  }
+
+  @GET
+  @Path("/search")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String queryAsJson(@QueryParam("query") String query) {
+    if (query == null || query.isBlank()) {
+      return "[]";
+    }
+
+    return ConfiguredGson.create().toJson(getResultsForQuery(query));
+  }
+
+  private List<Result> getResultsForQuery(@QueryParam("query") String query) {
+    return finder.query(loader, query)
         .stream()
         .flatMap(it -> loader.findByQualifiedName(it.getQualifiedName())
             .stream()
@@ -67,8 +82,6 @@ public class DocEndpoint {
             })
         )
         .collect(Collectors.toList());
-
-    return new ResultView(results);
   }
 
   private String renderCommentToHtml(JavadocElement element) {
